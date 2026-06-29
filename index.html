@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thunder MC Tiers - Rankings</title>
+    <style>
+        :root {
+            --bg-dark: #0f1115;
+            --bg-card: #161920;
+            --text-main: #ffffff;
+            --text-muted: #7c8594;
+            --accent-gold: #ffaa00;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Header Style */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #232836;
+            padding-bottom: 15px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+        }
+
+        /* Leaderboard Table Structure */
+        .leaderboard-headers {
+            display: grid;
+            grid-template-columns: 80px 2.5fr 1fr 2fr;
+            padding: 10px 20px;
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .player-row {
+            display: grid;
+            grid-template-columns: 80px 2.5fr 1fr 2fr;
+            align-items: center;
+            background-color: var(--bg-card);
+            margin-bottom: 8px;
+            padding: 12px 20px;
+            border-radius: 6px;
+            border: 1px solid #1e222b;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .player-row:hover {
+            transform: translateY(-2px);
+            border-color: #313747;
+        }
+
+        /* Top Ranks Highlights */
+        .rank-num {
+            font-size: 20px;
+            font-weight: 800;
+            font-style: italic;
+        }
+        .rank-1 { color: #ffaa00; }
+        .rank-2 { color: #cccccc; }
+        .rank-3 { color: #cd7f32; }
+        .rank-default { color: var(--text-muted); }
+
+        /* Player Profile Section */
+        .player-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            background-color: #232836;
+            image-rendering: pixelated;
+        }
+
+        .player-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .player-ign {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .player-title {
+            font-size: 12px;
+            color: #3bda7d;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .player-points {
+            color: var(--text-muted);
+            font-weight: 400;
+            font-size: 12px;
+        }
+
+        /* Region Badge */
+        .region-badge {
+            background-color: #281a1c;
+            color: #ff4b5c;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            width: fit-content;
+        }
+
+        /* Badges/Tiers Display */
+        .tier-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .badge-ht { background-color: #e23e3e; color: #fff; }
+        .badge-lt { background-color: #3e8ee2; color: #fff; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="logo">Thunder Tiers</div>
+        <div style="color: var(--text-muted);">SERVER IP: <span style="color: #ffaa00; font-weight:600; background: #1e222b; padding: 4px 8px; border-radius: 4px;">thundersmps17.gbnodes.host</span></div>
+    </div>
+
+    <div class="leaderboard-headers">
+        <div>#</div>
+        <div>Player</div>
+        <div>Region</div>
+        <div>Tiers</div>
+    </div>
+
+    <div id="leaderboard-rows"></div>
+</div>
+
+<script>
+    // Live Database Array - Isme players ka data store hai
+    const serverData = [
+        { 
+            ign: "danveetwarrior", 
+            skinIGN: "Technoblade", 
+            title: "Gladiator", 
+            region: "AS", 
+            tiers: ["💎 LT3 (Diamond SMP)", "🧪 HT4 (Nethpot)", "🔨 HT4 (Mace)"] 
+        },
+        {
+            ign: "CuteCappuccino",
+            skinIGN: "CuteCappuccino", // Inki real skin load hogi automatic
+            title: "Combat Master",
+            region: "AS",
+            tiers: ["🧪 HT3 (Nethpot)", "💎 LT3 (Diapot)", "⚔️ HT4 (Sword)", "🔨 HT4 (Smp)", "🏹 LT4 (Uhc)", "🔮 LT4 (Crystal)", "🌌 LT4"]
+        }
+    ];
+
+    // Dynamic Point Rules Mapping
+    function calculatePoints(tiers) {
+        let total = 0;
+        tiers.forEach(t => {
+            if (t.includes("LT3") || t.includes("HT3")) {
+                total += 5;
+            } else if (t.includes("HT4")) {
+                total += 3;
+            } else if (t.includes("LT4")) {
+                total += 2; // Baaki saare LT4 categories ke liye 2 points
+            }
+        });
+        return total;
+    }
+
+    function loadLeaderboard() {
+        const container = document.getElementById('leaderboard-rows');
+        container.innerHTML = "";
+
+        // Yeh loop automatic points calculate karke array ko high-to-low sort karega
+        serverData.forEach(p => {
+            p.totalPoints = calculatePoints(p.tiers);
+        });
+        serverData.sort((a, b) => b.totalPoints - a.totalPoints);
+
+        // Grid Generator Loop
+        serverData.forEach((player, index) => {
+            const rank = index + 1;
+            let rankClass = "rank-default";
+            
+            if(rank === 1) rankClass = "rank-1";
+            else if(rank === 2) rankClass = "rank-2";
+            else if(rank === 3) rankClass = "rank-3";
+
+            let badgesMarkup = "";
+            player.tiers.forEach(t => {
+                let badgeColorClass = t.includes("HT") ? "badge-ht" : "badge-lt";
+                badgesMarkup += `<span class="badge ${badgeColorClass}">${t}</span>`;
+            });
+
+            const row = document.createElement('div');
+            row.className = 'player-row';
+            row.innerHTML = `
+                <div class="rank-num ${rankClass}">${rank}.</div>
+                <div class="player-profile">
+                    <img class="player-avatar" src="https://minotar.net/avatar/${player.skinIGN}/40" alt="avatar">
+                    <div class="player-details">
+                        <span class="player-ign">${player.ign}</span>
+                        <span class="player-title">${player.title} <span class="player-points">(${player.totalPoints} points)</span></span>
+                    </div>
+                </div>
+                <div>
+                    <span class="region-badge">${player.region}</span>
+                </div>
+                <div class="tier-badges">
+                    ${badgesMarkup}
+                </div>
+            `;
+            container.appendChild(row);
+        });
+    }
+
+    loadLeaderboard();
+</script>
+
+</body>
+</html>
