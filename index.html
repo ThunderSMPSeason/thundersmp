@@ -3,22 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thunder MC Tiers - Rankings</title>
+    <title>Thunder SMP - Official Tier Dashboard</title>
     <style>
         :root {
-            --bg-dark: #0f1115;
-            --bg-card: #161920;
+            --bg-overlay: rgba(10, 12, 16, 0.88);
+            --bg-card: rgba(20, 24, 33, 0.93);
+            --bg-input: rgba(13, 16, 22, 0.8);
             --text-main: #ffffff;
-            --text-muted: #7c8594;
+            --text-muted: #8a96a8;
             --accent-gold: #ffaa00;
+            --accent-blue: #3e8ee2;
+            --accent-red: #e23e3e;
+            --accent-green: #2ecc71;
         }
 
         body {
-            background-color: var(--bg-dark);
+            background: url('https://images.unsplash.com/photo-1607988795691-3d0147b43231?q=80&w=1920') no-repeat center center fixed;
+            background-size: cover;
             color: var(--text-main);
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+        }
+
+        .backdrop {
+            background: var(--bg-overlay);
+            backdrop-filter: blur(10px);
+            min-height: 100vh;
+            padding: 25px;
+            box-sizing: border-box;
         }
 
         .container {
@@ -26,234 +39,510 @@
             margin: 0 auto;
         }
 
-        /* Header Style */
-        .header {
+        /* Top Navbar Layout */
+        .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: var(--bg-card);
+            padding: 15px 25px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
             margin-bottom: 30px;
-            border-bottom: 1px solid #232836;
-            padding-bottom: 15px;
         }
 
-        .logo {
-            font-size: 24px;
+        .nav-left .server-ip {
+            color: var(--accent-gold);
             font-weight: 800;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
+            background: rgba(255, 170, 0, 0.1);
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 170, 0, 0.2);
+            font-size: 14px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+
+        .nav-item {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: var(--text-main);
+        }
+
+        /* Branding Welcome Screen */
+        .welcome-screen {
+            text-align: center;
+            padding: 40px 20px 20px 20px;
+        }
+
+        .welcome-screen h1 {
+            font-size: 46px;
+            margin: 0 0 12px 0;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            background: linear-gradient(45deg, #ffaa00, #ffea00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+        }
+
+        .welcome-screen p {
+            color: var(--text-muted);
+            font-size: 16px;
+            margin: 0 auto;
+            max-width: 700px;
+            line-height: 1.6;
+        }
+
+        /* Create Your Team Panel Form */
+        .form-panel {
+            background: var(--bg-card);
+            border-radius: 14px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            margin: 30px auto;
+            max-width: 800px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+
+        .form-panel h3 {
+            margin: 0 0 15px 0;
             color: var(--accent-gold);
             text-transform: uppercase;
+            font-size: 18px;
+            letter-spacing: 0.5px;
         }
 
-        /* Leaderboard Table Structure */
-        .leaderboard-headers {
+        .form-grid {
             display: grid;
-            grid-template-columns: 80px 2.5fr 1fr 2fr;
-            padding: 10px 20px;
-            color: var(--text-muted);
-            font-size: 12px;
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        .player-row {
-            display: grid;
-            grid-template-columns: 80px 2.5fr 1fr 2fr;
-            align-items: center;
-            background-color: var(--bg-card);
-            margin-bottom: 8px;
-            padding: 12px 20px;
-            border-radius: 6px;
-            border: 1px solid #1e222b;
-            transition: transform 0.2s, border-color 0.2s;
-        }
-
-        .player-row:hover {
-            transform: translateY(-2px);
-            border-color: #313747;
-        }
-
-        /* Top Ranks Highlights */
-        .rank-num {
-            font-size: 20px;
-            font-weight: 800;
-            font-style: italic;
-        }
-        .rank-1 { color: #ffaa00; }
-        .rank-2 { color: #cccccc; }
-        .rank-3 { color: #cd7f32; }
-        .rank-default { color: var(--text-muted); }
-
-        /* Player Profile Section */
-        .player-profile {
-            display: flex;
-            align-items: center;
+            grid-template-columns: 1fr 1fr 1fr auto;
             gap: 15px;
+            align-items: center;
         }
 
-        .player-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 4px;
-            background-color: #232836;
-            image-rendering: pixelated;
-        }
-
-        .player-details {
+        .input-group {
             display: flex;
             flex-direction: column;
+            gap: 6px;
         }
 
-        .player-ign {
-            font-weight: 700;
-            font-size: 16px;
-        }
-
-        .player-title {
+        .input-group label {
             font-size: 12px;
-            color: #3bda7d;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .player-points {
             color: var(--text-muted);
-            font-weight: 400;
-            font-size: 12px;
-        }
-
-        /* Region Badge */
-        .region-badge {
-            background-color: #281a1c;
-            color: #ff4b5c;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 700;
-            width: fit-content;
-        }
-
-        /* Badges/Tiers Display */
-        .tier-badges {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 800;
             text-transform: uppercase;
+            font-weight: 700;
         }
 
-        .badge-ht { background-color: #e23e3e; color: #fff; }
-        .badge-lt { background-color: #3e8ee2; color: #fff; }
+        .input-field {
+            background: var(--bg-input);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 12px;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: var(--accent-gold);
+        }
+
+        select.input-field {
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            background: var(--accent-green);
+            color: #000;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            margin-top: 18px;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background-color: #27ae60;
+            transform: translateY(-1px);
+        }
+
+        /* Dynamic Options Switcher Tabs */
+        .main-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .tab-btn {
+            background: rgba(20, 24, 33, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 16px;
+            border-radius: 10px;
+            color: var(--text-muted);
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-main);
+        }
+
+        .tab-btn.active-tab {
+            background: var(--accent-gold);
+            color: #000000;
+            border-color: var(--accent-gold);
+            box-shadow: 0 4px 15px rgba(255, 170, 0, 0.25);
+        }
+
+        /* Displays Windows panels */
+        .display-box {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Table Structure Styles */
+        .grid-header-tier {
+            display: grid;
+            grid-template-columns: 80px 3.5fr 4fr;
+            padding: 10px 15px;
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .row-item-tier {
+            display: grid;
+            grid-template-columns: 80px 3.5fr 4fr;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            margin-bottom: 8px;
+            padding: 12px 15px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .grid-header-team {
+            display: grid;
+            grid-template-columns: 80px 3.5fr 2.5fr 2fr;
+            padding: 10px 15px;
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .row-item-team {
+            display: grid;
+            grid-template-columns: 80px 3.5fr 2.5fr 2fr;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            margin-bottom: 8px;
+            padding: 12px 15px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .rank { font-size: 18px; font-weight: 800; font-style: italic; }
+        .rank-1 { color: var(--accent-gold); }
+        .rank-2 { color: #cccccc; }
+
+        .profile { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 36px; height: 36px; border-radius: 4px; image-rendering: pixelated; }
+        .ign { font-weight: 700; font-size: 15px; }
+        .sub-info { font-size: 12px; color: var(--text-muted); display: block; }
+
+        .badge-container { display: flex; gap: 6px; flex-wrap: wrap; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 800; }
+        .badge-ht { background-color: var(--accent-red); color: #fff; }
+        .badge-lt { background-color: var(--accent-blue); color: #fff; }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <div class="logo">Thunder Tiers</div>
-        <div style="color: var(--text-muted);">SERVER IP: <span style="color: #ffaa00; font-weight:600; background: #1e222b; padding: 4px 8px; border-radius: 4px;">thundersmps17.gbnodes.host</span></div>
-    </div>
+<div class="backdrop">
+    <div class="container">
+        
+        <!-- Navbar Top Layout Structure -->
+        <div class="navbar">
+            <div class="nav-left">
+                <span class="server-ip">⚡ IP: thundersmps17.gbnodes.host</span>
+            </div>
+            <div class="nav-links">
+                <span class="nav-item active" onclick="switchNav('home')">Home</span>
+                <span class="nav-item" onclick="switchNav('discover')">Discover</span>
+                <span class="nav-item" onclick="switchNav('owner')">Owner</span>
+            </div>
+        </div>
 
-    <div class="leaderboard-headers">
-        <div>#</div>
-        <div>Player</div>
-        <div>Region</div>
-        <div>Tiers</div>
-    </div>
+        <!-- Home Main Interface View Hub -->
+        <div id="home-view">
+            <!-- Professional Main Header Profile Banner -->
+            <div class="welcome-screen">
+                <h1>Thunder SMP Website</h1>
+                <p>Welcome to the ultimate Thunder competitive arena database. Manage rosters, review elite custom PvP player tiers, tracked faction strength, and fight logs live.</p>
+            </div>
 
-    <div id="leaderboard-rows"></div>
+            <!-- Dynamic Interactive Team Creation Registration Panel Screen -->
+            <div class="form-panel">
+                <h3>🛡️ Register Your Custom Team</h3>
+                <form id="teamRegisterForm" onsubmit="registerTeamEngine(event)">
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label for="p-ign">Player IGN</label>
+                            <input type="text" id="p-ign" class="input-field" placeholder="e.g. danveetwarrior" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="p-region">Region</label>
+                            <select id="p-region" class="input-field" required>
+                                <option value="AS">Asia (AS)</option>
+                                <option value="EU">Europe (EU)</option>
+                                <option value="NA">North America (NA)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="p-team">Team Name</label>
+                            <input type="text" id="p-team" class="input-field" placeholder="e.g. Team Alpha" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn">Register Team & Sync Live</button>
+                </form>
+            </div>
+
+            <!-- Three Custom Core Options Selection Nodes Tab Row -->
+            <div class="main-tabs">
+                <div id="tab-tier" class="tab-btn active-tab" onclick="switchTab('tier')">⚔️ Tier Leaderboard</div>
+                <div id="tab-team" class="tab-btn" onclick="switchTab('team')">🛡️ Team Top</div>
+                <div id="tab-endwar" class="tab-btn" onclick="switchTab('endwar')">👑 End War Winner</div>
+            </div>
+
+            <!-- Panel Contents Windows Panels Box Areas -->
+            <div class="display-box">
+                
+                <!-- 1st Area: Player Tier Framework Nodes Panel Layout View -->
+                <div id="content-tier">
+                    <div class="grid-header-tier">
+                        <div>Pos</div>
+                        <div>Competitor Profile</div>
+                        <div>Registered Active Tiers</div>
+                    </div>
+                    <div id="tier-rows"></div>
+                </div>
+
+                <!-- 2nd Area: Dynamic Registered Team Tops Frame Panel Displays -->
+                <div id="content-team" class="hidden">
+                    <div class="grid-header-team">
+                        <div>Pos</div>
+                        <div>Registered Team Name</div>
+                        <div>Founder / Top Rep</div>
+                        <div>Region Meta</div>
+                    </div>
+                    <div id="team-rows">
+                        <div class="empty-state">⚠️ No registered teams found. Use the registration module above to list your team!</div>
+                    </div>
+                </div>
+
+                <!-- 3rd Area: End War Screen Displays Block -->
+                <div id="content-endwar" class="hidden">
+                    <div class="empty-state">
+                        🔒 No ongoing end wars recorded. Check back later after upcoming server events!
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Standalone Standby Discover Frame Panels Menu -->
+        <div id="discover-view" class="hidden">
+            <div class="display-box">
+                <h2>Discover Dashboard Hub</h2>
+                <p style="color: var(--text-muted);">Explore community analytics, global region metas, and pending applications here soon.</p>
+            </div>
+        </div>
+
+        <!-- Project Developer Ownership Authorization Details Card -->
+        <div id="owner-view" class="hidden">
+            <div class="display-box" style="text-align: center; padding: 40px;">
+                <h2 style="color: var(--accent-gold); margin-bottom: 5px;">Project Credentials</h2>
+                <p style="font-size: 18px; font-weight: 600;">Developer is <span style="background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 6px;">danveetwarrior</span></p>
+                <p style="color: var(--text-muted); font-size: 14px;">Powered securely via Thunder Network Systems</p>
+            </div>
+        </div>
+
+    </div>
 </div>
 
 <script>
-    // Live Database Array - Isme players ka data store hai
-    const serverData = [
-        { 
-            ign: "danveetwarrior", 
-            skinIGN: "Technoblade", 
-            title: "Gladiator", 
-            region: "AS", 
-            tiers: ["💎 LT3 (Diamond SMP)", "🧪 HT4 (Nethpot)", "🔨 HT4 (Mace)"] 
-        },
-        {
-            ign: "CuteCappuccino",
-            skinIGN: "CuteCappuccino", // Inki real skin load hogi automatic
-            title: "Combat Master",
-            region: "AS",
-            tiers: ["🧪 HT3 (Nethpot)", "💎 LT3 (Diapot)", "⚔️ HT4 (Sword)", "🔨 HT4 (Smp)", "🏹 LT4 (Uhc)", "🔮 LT4 (Crystal)", "🌌 LT4"]
-        }
+    // Local Framework Static Database Node Array For Tiers
+    const playerData = [
+        { ign: "danveetwarrior", skinIGN: "Technoblade", title: "Gladiator", tiers: ["💎 LT3 (Diamond SMP)", "🧪 HT4 (Nethpot)", "🔨 HT4 (Mace)"] },
+        { ign: "CuteCappuccino", skinIGN: "CuteCappuccino", title: "Combat Master", tiers: ["🧪 HT3 (Nethpot)", "💎 LT3 (Diapot)", "⚔️ HT4 (Sword)", "🔨 HT4 (Smp)", "🏹 LT4 (Uhc)", "🔮 LT4 (Crystal)", "🌌 LT4"] }
     ];
 
-    // Dynamic Point Rules Mapping
-    function calculatePoints(tiers) {
-        let total = 0;
+    // Local Array Storage to host dynamically user-registered custom teams
+    const registeredTeamsList = [];
+
+    // Local Mathematical Dynamic Calculation Scoring Engines Systems
+    function runPointCalc(tiers) {
+        let pts = 0;
         tiers.forEach(t => {
-            if (t.includes("LT3") || t.includes("HT3")) {
-                total += 5;
-            } else if (t.includes("HT4")) {
-                total += 3;
-            } else if (t.includes("LT4")) {
-                total += 2; // Baaki saare LT4 categories ke liye 2 points
-            }
+            if (t.includes("LT3") || t.includes("HT3")) pts += 5;
+            else if (t.includes("HT4")) pts += 3;
+            else if (t.includes("LT4")) pts += 2;
         });
-        return total;
+        return pts;
     }
 
-    function loadLeaderboard() {
-        const container = document.getElementById('leaderboard-rows');
-        container.innerHTML = "";
+    // Initialize Global Main Display Loops System Engines
+    function initFrameworkEngine() {
+        playerData.forEach(p => p.computedScore = runPointCalc(p.tiers));
+        playerData.sort((a, b) => b.computedScore - a.computedScore);
 
-        // Yeh loop automatic points calculate karke array ko high-to-low sort karega
-        serverData.forEach(p => {
-            p.totalPoints = calculatePoints(p.tiers);
-        });
-        serverData.sort((a, b) => b.totalPoints - a.totalPoints);
-
-        // Grid Generator Loop
-        serverData.forEach((player, index) => {
-            const rank = index + 1;
-            let rankClass = "rank-default";
+        const tierContainer = document.getElementById('tier-rows');
+        tierContainer.innerHTML = "";
+        playerData.forEach((player, i) => {
+            const pos = i + 1;
+            const posClass = pos === 1 ? "rank-1" : pos === 2 ? "rank-2" : "";
             
-            if(rank === 1) rankClass = "rank-1";
-            else if(rank === 2) rankClass = "rank-2";
-            else if(rank === 3) rankClass = "rank-3";
-
-            let badgesMarkup = "";
+            let badges = "";
             player.tiers.forEach(t => {
-                let badgeColorClass = t.includes("HT") ? "badge-ht" : "badge-lt";
-                badgesMarkup += `<span class="badge ${badgeColorClass}">${t}</span>`;
+                let badgeClass = t.includes("HT") ? "badge-ht" : "badge-lt";
+                badges += `<span class="badge ${badgeClass}">${t}</span>`;
             });
 
-            const row = document.createElement('div');
-            row.className = 'player-row';
-            row.innerHTML = `
-                <div class="rank-num ${rankClass}">${rank}.</div>
-                <div class="player-profile">
-                    <img class="player-avatar" src="https://minotar.net/avatar/${player.skinIGN}/40" alt="avatar">
-                    <div class="player-details">
-                        <span class="player-ign">${player.ign}</span>
-                        <span class="player-title">${player.title} <span class="player-points">(${player.totalPoints} points)</span></span>
+            tierContainer.innerHTML += `
+                <div class="row-item-tier">
+                    <div class="rank ${posClass}">#${pos}</div>
+                    <div class="profile">
+                        <img class="avatar" src="https://minotar.net/avatar/${player.skinIGN}/40">
+                        <div>
+                            <span class="ign">${player.ign}</span>
+                            <span class="sub-info">${player.title} (${player.computedScore} pts)</span>
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <span class="region-badge">${player.region}</span>
-                </div>
-                <div class="tier-badges">
-                    ${badgesMarkup}
-                </div>
-            `;
-            container.appendChild(row);
+                    <div class="badge-container">${badges}</div>
+                </div>`;
         });
     }
 
-    loadLeaderboard();
+    // Dynamic Runtime Team Registration Engine System Logic
+    function registerTeamEngine(event) {
+        event.preventDefault(); // Form reload control blocks
+
+        const ignInput = document.getElementById('p-ign').value.trim();
+        const regionInput = document.getElementById('p-region').value;
+        const teamInput = document.getElementById('p-team').value.trim();
+
+        // Object generation architecture
+        const newTeamNode = {
+            name: teamInput,
+            leader: ignInput,
+            region: regionInput
+        };
+
+        // Inject inside runtime temporary database space
+        registeredTeamsList.push(newTeamNode);
+
+        // Instantly force UI re-render updates inside Team Top panel list spaces
+        updateTeamTopUI();
+
+        // Clear inputs array elements
+        document.getElementById('teamRegisterForm').reset();
+        
+        // Auto-switch display view context direct on Team Top tab pane views to show confirmation
+        switchTab('team');
+    }
+
+    // Dedicated Team Top Dynamic View Rendering Array Compiler Subsystem
+    function updateTeamTopUI() {
+        const teamContainer = document.getElementById('team-rows');
+        
+        if (registeredTeamsList.length === 0) {
+            teamContainer.innerHTML = `<div class="empty-state">⚠️ No registered teams found. Use the registration module above to list your team!</div>`;
+            return;
+        }
+
+        teamContainer.innerHTML = "";
+        registeredTeamsList.forEach((team, index) => {
+            const pos = index + 1;
+            const posClass = pos === 1 ? "rank-1" : pos === 2 ? "rank-2" : "";
+
+            teamContainer.innerHTML += `
+                <div class="row-item-team">
+                    <div class="rank ${posClass}">#${pos}</div>
+                    <div class="ign" style="font-size:16px; color:var(--accent-gold); font-weight:800;">${team.name}</div>
+                    <div class="profile">
+                        <img class="avatar" src="https://minotar.net/avatar/${team.leader}/40">
+                        <span class="ign">${team.leader}</span>
+                    </div>
+                    <div>
+                        <span class="badge badge-lt" style="background:#281a1c; color:#ff4b5c; border:1px solid rgba(255,75,92,0.2);">${team.region} Region</span>
+                    </div>
+                </div>`;
+        });
+    }
+
+    // Dynamic Options Tabs Switching Controls Interface Panels Switchers
+    function switchTab(targetTab) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active-tab'));
+        document.getElementById('content-tier').classList.add('hidden');
+        document.getElementById('content-team').classList.add('hidden');
+        document.getElementById('content-endwar').classList.add('hidden');
+
+        document.getElementById(`tab-${targetTab}`).classList.add('active-tab');
+        document.getElementById(`content-${targetTab}`).classList.remove('hidden');
+    }
+
+    // Top Header Navigations Modules Controllers Switches
+    function switchNav(targetNav) {
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        document.getElementById('home-view').classList.add('hidden');
+        document.getElementById('discover-view').classList.add('hidden');
+        document.getElementById('owner-view').classList.add('hidden');
+
+        event.target.classList.add('active');
+        document.getElementById(`${targetNav}-view`).classList.remove('hidden');
+    }
+
+    // Main Engine Runtime Initialization
+    initFrameworkEngine();
 </script>
 
 </body>
